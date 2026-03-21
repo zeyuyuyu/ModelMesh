@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModelMesh Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #0f172a;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 600;
+            background: linear-gradient(45deg, #60a5fa, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #60a5fa;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .model-list {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+
+        .model-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.3s ease;
+        }
+
+        .model-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .model-status {
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+        }
+
+        .status-active {
+            background: #22c55e;
+            color: #fff;
+        }
+
+        .status-inactive {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+            }
+            to {
+                text-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+            }
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #60a5fa;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="logo">ModelMesh</h1>
+            <div class="actions">
+                <button class="btn btn-primary" onclick="refreshModels()">Refresh Models</button>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="activeModels">0</div>
+                <div class="stat-label">Active Models</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalRequests">0</div>
+                <div class="stat-label">Total Requests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgLatency">0ms</div>
+                <div class="stat-label">Average Latency</div>
+            </div>
+        </div>
+
+        <div class="model-list" id="modelList">
+            <!-- Models will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Simulated data - replace with actual API calls
+        let models = [
+            { name: 'BERT-base', status: 'active', requests: 1234, latency: '45ms' },
+            { name: 'GPT-2', status: 'active', requests: 890, latency: '120ms' },
+            { name: 'ResNet50', status: 'inactive', requests: 567, latency: '30ms' }
+        ];
+
+        function updateStats() {
+            const activeCount = models.filter(m => m.status === 'active').length;
+            const totalReqs = models.reduce((acc, m) => acc + m.requests, 0);
+            const avgLat = Math.round(models.reduce((acc, m) => acc + parseInt(m.latency), 0) / models.length);
+
+            document.getElementById('activeModels').textContent = activeCount;
+            document.getElementById('totalRequests').textContent = totalReqs;
+            document.getElementById('avgLatency').textContent = avgLat + 'ms';
+        }
+
+        function renderModels() {
+            const modelList = document.getElementById('modelList');
+            modelList.innerHTML = models.map(model => `
+                <div class="model-item">
+                    <div>
+                        <h3>${model.name}</h3>
+                        <small>${model.requests} requests | ${model.latency}</small>
+                    </div>
+                    <span class="model-status status-${model.status}">${model.status}</span>
+                </div>
+            `).join('');
+        }
+
+        function refreshModels() {
+            // Simulate API call
+            const btn = document.querySelector('.btn-primary');
+            btn.style.opacity = '0.5';
+            setTimeout(() => {
+                models = [...models]; // In real app, fetch new data
+                renderModels();
+                updateStats();
+                btn.style.opacity = '1';
+            }, 1000);
+        }
+
+        // Initial render
+        renderModels();
+        updateStats();
+
+        // Auto-refresh every 30 seconds
+        setInterval(refreshModels, 30000);
+    </script>
+</body>
+</html>
