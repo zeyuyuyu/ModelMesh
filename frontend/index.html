@@ -4,18 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ModelMesh Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #818cf8;
+            --bg: #f8fafc;
+            --text: #1e293b;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
-            background: #0f172a;
-            color: #fff;
+            background: var(--bg);
+            color: var(--text);
         }
 
         .container {
@@ -28,194 +35,189 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
         }
 
         .logo {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 600;
-            background: linear-gradient(45deg, #60a5fa, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: glow 2s ease-in-out infinite alternate;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo svg {
+            width: 24px;
+            height: 24px;
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
+            background: white;
             padding: 1.5rem;
-            backdrop-filter: blur(10px);
-            transition: transform 0.3s ease;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            transition: transform 0.2s;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-4px);
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
         }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #60a5fa;
-        }
-
-        .stat-label {
-            color: #94a3b8;
-            font-size: 0.9rem;
         }
 
         .model-list {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
-            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            overflow: hidden;
         }
 
         .model-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            transition: background 0.3s ease;
+            cursor: pointer;
+            transition: background-color 0.2s;
         }
 
         .model-item:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background-color: #f1f5f9;
         }
 
         .model-status {
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
         }
 
         .status-active {
-            background: #22c55e;
-            color: #fff;
+            background: #dcfce7;
+            color: #166534;
         }
 
         .status-inactive {
-            background: #ef4444;
-            color: #fff;
+            background: #fee2e2;
+            color: #991b1b;
         }
 
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
-            }
-            to {
-                text-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
-            }
-        }
-
-        .actions {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: #60a5fa;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #3b82f6;
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1 class="logo">ModelMesh</h1>
-            <div class="actions">
-                <button class="btn btn-primary" onclick="refreshModels()">Refresh Models</button>
+            <div class="logo">
+                <svg fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                ModelMesh Dashboard
             </div>
+            <div id="connection-status" class="model-status status-active">Connected</div>
         </header>
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-value" id="activeModels">0</div>
-                <div class="stat-label">Active Models</div>
+                <div class="stat-title">Active Models</div>
+                <div class="stat-value" id="active-models">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="totalRequests">0</div>
-                <div class="stat-label">Total Requests</div>
+                <div class="stat-title">Total Requests</div>
+                <div class="stat-value" id="total-requests">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="avgLatency">0ms</div>
-                <div class="stat-label">Average Latency</div>
+                <div class="stat-title">Average Latency</div>
+                <div class="stat-value" id="avg-latency">0ms</div>
             </div>
         </div>
 
-        <div class="model-list" id="modelList">
-            <!-- Models will be dynamically inserted here -->
+        <div class="model-list" id="model-list">
+            <!-- Models will be inserted here dynamically -->
         </div>
     </div>
 
     <script>
-        // Simulated data - replace with actual API calls
-        let models = [
-            { name: 'BERT-base', status: 'active', requests: 1234, latency: '45ms' },
-            { name: 'GPT-2', status: 'active', requests: 890, latency: '120ms' },
-            { name: 'ResNet50', status: 'inactive', requests: 567, latency: '30ms' }
+        // Simulated data for demonstration
+        let stats = {
+            activeModels: 0,
+            totalRequests: 0,
+            avgLatency: 0
+        };
+
+        const models = [
+            { name: 'bert-base', status: 'active', requests: 1250 },
+            { name: 'gpt2-medium', status: 'active', requests: 890 },
+            { name: 'resnet50', status: 'inactive', requests: 456 }
         ];
 
         function updateStats() {
-            const activeCount = models.filter(m => m.status === 'active').length;
-            const totalReqs = models.reduce((acc, m) => acc + m.requests, 0);
-            const avgLat = Math.round(models.reduce((acc, m) => acc + parseInt(m.latency), 0) / models.length);
+            stats.activeModels = models.filter(m => m.status === 'active').length;
+            stats.totalRequests = models.reduce((acc, m) => acc + m.requests, 0);
+            stats.avgLatency = Math.round(Math.random() * 100);
 
-            document.getElementById('activeModels').textContent = activeCount;
-            document.getElementById('totalRequests').textContent = totalReqs;
-            document.getElementById('avgLatency').textContent = avgLat + 'ms';
+            document.getElementById('active-models').textContent = stats.activeModels;
+            document.getElementById('total-requests').textContent = stats.totalRequests.toLocaleString();
+            document.getElementById('avg-latency').textContent = `${stats.avgLatency}ms`;
         }
 
         function renderModels() {
-            const modelList = document.getElementById('modelList');
+            const modelList = document.getElementById('model-list');
             modelList.innerHTML = models.map(model => `
                 <div class="model-item">
                     <div>
-                        <h3>${model.name}</h3>
-                        <small>${model.requests} requests | ${model.latency}</small>
+                        <strong>${model.name}</strong>
+                        <div style="color: #64748b; font-size: 0.875rem;">${model.requests.toLocaleString()} requests</div>
                     </div>
-                    <span class="model-status status-${model.status}">${model.status}</span>
+                    <div class="model-status status-${model.status}">${model.status}</div>
                 </div>
             `).join('');
         }
 
-        function refreshModels() {
-            // Simulate API call
-            const btn = document.querySelector('.btn-primary');
-            btn.style.opacity = '0.5';
-            setTimeout(() => {
-                models = [...models]; // In real app, fetch new data
-                renderModels();
-                updateStats();
-                btn.style.opacity = '1';
-            }, 1000);
-        }
+        // Simulate real-time updates
+        setInterval(() => {
+            models.forEach(model => {
+                if (Math.random() > 0.7) {
+                    model.requests += Math.floor(Math.random() * 10);
+                }
+            });
+            updateStats();
+            renderModels();
+        }, 2000);
 
         // Initial render
-        renderModels();
         updateStats();
+        renderModels();
 
-        // Auto-refresh every 30 seconds
-        setInterval(refreshModels, 30000);
+        // Add some interactivity
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.style.animation = 'pulse 0.5s';
+                setTimeout(() => card.style.animation = '', 500);
+            });
+        });
     </script>
 </body>
 </html>
