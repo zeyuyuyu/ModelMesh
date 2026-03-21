@@ -1,1 +1,105 @@
-import os!import logging!import time!from typing import Dict, List!from collections import deque!from multiprocessing import Pool, cpu_count!import numpy as np!!class ModelManager:!    def __init__(self, config_path: str):!        self.config_path = config_path!        self.model_configs = self.load_model_configs()!        self.agent_clusters = {}!        self.cluster_queue = deque()!        self.pool = Pool(processes=cpu_count())!!    def load_model_configs(self) -> Dict[str, dict]:!        # Load model configurations from the config file!        configs = {}!        # ...!        return configs!!    def create_agent_cluster(self, model_name: str, num_agents: int) -> List["Agent"]:!        # Create a new cluster of agents for the given model!        agents = []!        for _ in range(num_agents):!            agent = Agent(model_name)!            agents.append(agent)!        self.agent_clusters[model_name] = agents!        return agents!!    def scale_agent_cluster(self, model_name: str, target_size: int) -> List["Agent"]:!        current_size = len(self.agent_clusters[model_name])!        if current_size < target_size:!            # Scale up the cluster!            new_agents = self.create_agent_cluster(model_name, target_size - current_size)!            self.agent_clusters[model_name].extend(new_agents)!            return new_agents!        elif current_size > target_size:!            # Scale down the cluster!            agents_to_remove = self.agent_clusters[model_name][target_size:]!            self.agent_clusters[model_name] = self.agent_clusters[model_name][:target_size]!            return agents_to_remove!        else:!            # No change needed!            return []!!    def run_inference(self, model_name: str, inputs: np.ndarray) -> np.ndarray:!        # Distribute the inputs among the agents in the cluster!        batch_size = inputs.shape[0]!        agents = self.agent_clusters[model_name]!        agent_batch_size = batch_size // len(agents)!        results = self.pool.map(lambda agent: agent.run_inference(inputs[agent_batch_size*i:agent_batch_size*(i+1)]), range(len(agents)))!        return np.concatenate(results, axis=0)!!    def monitor_cluster_utilization(self):!        # Monitor the utilization of each agent cluster and scale accordingly!        while True:!            for model_name, agents in self.agent_clusters.items():!                # Check the utilization of the agents in the cluster!                utilization = self.measure_cluster_utilization(agents)!                target_size = self.determine_target_size(model_name, utilization)!                self.scale_agent_cluster(model_name, target_size)!            time.sleep(60)!!    def measure_cluster_utilization(self, agents: List["Agent"]) -> float:!        # Measure the average utilization of the agents in the cluster!        utilizations = [agent.get_utilization() for agent in agents]!        return np.mean(utilizations)!!    def determine_target_size(self, model_name: str, utilization: float) -> int:!        # Determine the target size for the agent cluster based on the current utilization!        config = self.model_configs[model_name]!        min_agents = config["min_agents"]!        max_agents = config["max_agents"]!        target_utilization = config["target_utilization"]!        if utilization < target_utilization * 0.8:!            return max(min_agents, len(self.agent_clusters[model_name]) - 1)!        elif utilization > target_utilization * 1.2:!            return min(max_agents, len(self.agent_clusters[model_name]) + 1)!        else:!            return len(self.agent_clusters[model_name])!!class Agent:!    def __init__(self, model_name: str):!        self.model_name = model_name!        self.model = self.load_model(model_name)!        self.last_inference_time = 0!!    def load_model(self, model_name: str):!        # Load the ML model for the given model name!        # ...!        return model!!    def run_inference(self, inputs: np.ndarray) -> np.ndarray:!        # Run inference on the input data using the loaded model!        start_time = time.time()!        outputs = self.model.predict(inputs)!        inference_time = time.time() - start_time!        self.last_inference_time = inference_time!        return outputs!!    def get_utilization(self) -> float:!        # Calculate the utilization of the agent based on its last inference time!        return self.last_inference_time / 1.0  # Assume a target inference time of 1 second
+import asyncio
+from typing import Dict, Optional, Any
+from dataclasses import dataclass
+from datetime import datetime
+import logging
+from enum import Enum
+
+class ModelStatus(Enum):
+    LOADING = 'loading'
+    READY = 'ready'
+    ERROR = 'error'
+    UNLOADED = 'unloaded'
+
+@dataclass
+class ModelInfo:
+    name: str
+    status: ModelStatus
+    load_time: Optional[datetime] = None
+    error_count: int = 0
+    last_error: Optional[str] = None
+    metadata: Dict[str, Any] = None
+
+class ModelManager:
+    def __init__(self, max_retries: int = 3, health_check_interval: int = 60):
+        self.models: Dict[str, ModelInfo] = {}
+        self.max_retries = max_retries
+        self.health_check_interval = health_check_interval
+        self.logger = logging.getLogger(__name__)
+
+    async def load_model(self, model_name: str, model_path: str) -> bool:
+        if model_name in self.models:
+            self.logger.warning(f'Model {model_name} already registered')
+            return False
+
+        model_info = ModelInfo(name=model_name, status=ModelStatus.LOADING)
+        self.models[model_name] = model_info
+
+        try:
+            # Simulated async model loading
+            await asyncio.sleep(2)
+            # TODO: Implement actual model loading logic here
+            
+            model_info.status = ModelStatus.READY
+            model_info.load_time = datetime.now()
+            self.logger.info(f'Successfully loaded model {model_name}')
+            
+            # Start health check loop
+            asyncio.create_task(self._health_check_loop(model_name))
+            return True
+
+        except Exception as e:
+            model_info.status = ModelStatus.ERROR
+            model_info.last_error = str(e)
+            model_info.error_count += 1
+            self.logger.error(f'Failed to load model {model_name}: {e}')
+            return False
+
+    async def unload_model(self, model_name: str) -> bool:
+        if model_name not in self.models:
+            return False
+
+        model_info = self.models[model_name]
+        try:
+            # TODO: Implement actual model unloading logic
+            model_info.status = ModelStatus.UNLOADED
+            del self.models[model_name]
+            return True
+        except Exception as e:
+            self.logger.error(f'Failed to unload model {model_name}: {e}')
+            return False
+
+    async def _health_check_loop(self, model_name: str):
+        while model_name in self.models:
+            model_info = self.models[model_name]
+            
+            if model_info.status == ModelStatus.ERROR:
+                if model_info.error_count >= self.max_retries:
+                    self.logger.error(f'Circuit breaker triggered for {model_name}')
+                    await self.unload_model(model_name)
+                    break
+                    
+            try:
+                # TODO: Implement actual health check logic
+                await asyncio.sleep(self.health_check_interval)
+                
+            except Exception as e:
+                model_info.status = ModelStatus.ERROR
+                model_info.last_error = str(e)
+                model_info.error_count += 1
+                self.logger.error(f'Health check failed for {model_name}: {e}')
+
+    def get_model_info(self, model_name: str) -> Optional[ModelInfo]:
+        return self.models.get(model_name)
+
+    def list_models(self) -> Dict[str, ModelInfo]:
+        return self.models.copy()
+
+    async def reload_model(self, model_name: str) -> bool:
+        if model_name not in self.models:
+            return False
+            
+        await self.unload_model(model_name)
+        # Assuming we store model paths somewhere
+        model_path = f'path/to/{model_name}'  # TODO: Implement proper path storage
+        return await self.load_model(model_name, model_path)
