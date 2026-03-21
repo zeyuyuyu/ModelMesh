@@ -1,1 +1,39 @@
-import numpy as np!from typing import List, Dict!from collections import deque!from .agent import Agent!!!!class ModelManager:!    def __init__(self, num_agents: int, agent_config: Dict[str, any]):!        self.agents = [Agent(agent_config) for _ in range(num_agents)]!        self.agent_positions = np.zeros((num_agents, 2))!        self.agent_velocities = np.zeros((num_agents, 2))!        self.agent_states = [agent.state for agent in self.agents]!        self.swarm_center = np.zeros(2)!        self.swarm_radius = 0.0!!!!    def update(self, dt: float):!        # Update agent states!        for i, agent in enumerate(self.agents):!            self.agent_positions[i] = agent.position!            self.agent_velocities[i] = agent.velocity!            self.agent_states[i] = agent.state!!!!        # Compute swarm center and radius!        self.swarm_center = np.mean(self.agent_positions, axis=0)!        self.swarm_radius = np.max(np.linalg.norm(self.agent_positions - self.swarm_center, axis=1))!!!!        # Coordinate swarm movement!        for agent in self.agents:!            agent.move_towards_center(self.swarm_center)!            agent.adjust_velocity_to_match_swarm(self.agent_velocities)!            agent.avoid_swarm_edge(self.swarm_radius)!!!!        # Update agent positions and velocities!        for i, agent in enumerate(self.agents):!            agent.position = self.agent_positions[i]!            agent.velocity = self.agent_velocities[i]!            agent.state = self.agent_states[i]!!!!    def get_agent_states(self) -> List[Dict[str, any]]:!        return [agent.state for agent in self.agents]!!!!    def get_swarm_state(self) -> Dict[str, any]:!        return {!            "swarm_center": self.swarm_center.tolist(),!            "swarm_radius": self.swarm_radius!        }
+# src/model_manager.py
+
+import numpy as np
+import requests
+
+class ModelManager:
+    def __init__(self):
+        self.models = {}
+        self.peers = []
+        self.weights = None
+
+    def add_model(self, model_id, model):
+        self.models[model_id] = model
+
+    def add_peer(self, peer_url):
+        self.peers.append(peer_url)
+
+    def federate_models(self):
+        # Fetch model weights from peers
+        for peer in self.peers:
+            try:
+                response = requests.get(f"{peer}/model")
+                peer_weights = response.json()
+                self.weights = self._aggregate_weights(self.weights, peer_weights)
+            except requests.exceptions.RequestException:
+                print(f"Error fetching model from {peer}")
+
+        # Update local models with federated weights
+        for model_id, model in self.models.items():
+            model.set_weights(self.weights)
+
+    def _aggregate_weights(self, local_weights, peer_weights):
+        if local_weights is None:
+            return peer_weights
+
+        for layer in range(len(local_weights)):
+            local_weights[layer] = (local_weights[layer] + peer_weights[layer]) / 2
+
+        return local_weights
