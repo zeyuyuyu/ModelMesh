@@ -1,91 +1,80 @@
 import os
-import gc
-import torch
 import logging
-from typing import Dict, Optional
+from typing import Dict, List, Optional, Union
+import torch
+from dataclasses import dataclass
+
+@dataclass
+class ModelConfig:
+    name: str
+    max_batch_size: int
+    min_memory_mb: int
+    max_memory_mb: int
+    scaling_factor: float = 1.0
 
 class ModelManager:
-    def __init__(self, max_memory_gb: float = 8.0):
-        self.max_memory_gb = max_memory_gb
-        self.loaded_models: Dict[str, torch.nn.Module] = {}
-        self.model_memory_usage: Dict[str, float] = {}
+    def __init__(self):
+        self.models: Dict[str, torch.nn.Module] = {}
+        self.configs: Dict[str, ModelConfig] = {}
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.logger = logging.getLogger(__name__)
 
-    def get_model_memory_gb(self, model: torch.nn.Module) -> float:
-        """Estimate memory usage of a PyTorch model in GB"""
-        mem_params = sum([param.nelement() * param.element_size() for param in model.parameters()])
-        mem_bufs = sum([buf.nelement() * buf.element_size() for buf in model.buffers()])
-        return (mem_params + mem_bufs) / 1024**3
+    def register_model(self, model: torch.nn.Module, config: ModelConfig) -> None:
+        """Register a model with its configuration for management."""
+        self.models[config.name] = model.to(self.device)
+        self.configs[config.name] = config
+        self.logger.info(f'Registered model {config.name}')
 
-    def get_available_memory_gb(self) -> float:
-        """Get available GPU memory if CUDA is available, otherwise system RAM"""
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-            return torch.cuda.get_device_properties(0).total_memory / 1024**3
-        else:
-            import psutil
-            return psutil.virtual_memory().available / 1024**3
+    def auto_batch(self, model_name: str, inputs: List[torch.Tensor]) -> List[torch.Tensor]:
+        """Automatically batch inputs based on model configuration and available resources."""
+        if model_name not in self.models:
+            raise KeyError(f'Model {model_name} not found')
 
-    def load_model(self, model_id: str, model_class: torch.nn.Module, **kwargs) -> Optional[torch.nn.Module]:
-        """Load a model while respecting memory constraints"""
-        if model_id in self.loaded_models:
-            return self.loaded_models[model_id]
+        config = self.configs[model_name]
+        total_samples = len(inputs)
+        batch_size = min(total_samples, config.max_batch_size)
 
-        try:
-            model = model_class(**kwargs)
-            model_size = self.get_model_memory_gb(model)
+        # Adjust batch size based on available memory
+        available_memory = torch.cuda.get_device_properties(self.device).total_memory
+        memory_per_sample = config.min_memory_mb * 1024 * 1024  # Convert to bytes
+        max_possible_batch = available_memory // memory_per_sample
+        batch_size = min(batch_size, max_possible_batch)
 
-            # Check if loading this model would exceed memory limit
-            current_usage = sum(self.model_memory_usage.values())
-            if current_usage + model_size > self.max_memory_gb:
-                self.free_memory(model_size)
+        results = []
+        for i in range(0, total_samples, batch_size):
+            batch = torch.stack(inputs[i:i + batch_size]).to(self.device)
+            with torch.no_grad():
+                output = self.models[model_name](batch)
+            results.extend(output.cpu().split(1))
 
+        return results
+
+    def scale_model(self, model_name: str, scaling_factor: Optional[float] = None) -> None:
+        """Dynamically scale model resources based on load or explicit scaling factor."""
+        if model_name not in self.models:
+            raise KeyError(f'Model {model_name} not found')
+
+        config = self.configs[model_name]
+        if scaling_factor is None:
+            # Auto-determine scaling factor based on device utilization
             if torch.cuda.is_available():
-                model = model.cuda()
+                utilization = torch.cuda.memory_allocated() / torch.cuda.max_memory_allocated()
+                scaling_factor = 1.0 + (utilization - 0.5)  # Scale up/down based on 50% threshold
 
-            self.loaded_models[model_id] = model
-            self.model_memory_usage[model_id] = model_size
-            self.logger.info(f'Successfully loaded model {model_id}, size: {model_size:.2f}GB')
-            return model
+        config.scaling_factor = max(0.1, min(2.0, scaling_factor))  # Limit scaling range
+        config.max_batch_size = int(config.max_batch_size * config.scaling_factor)
+        
+        self.logger.info(f'Scaled model {model_name} by factor {config.scaling_factor}')
 
-        except Exception as e:
-            self.logger.error(f'Failed to load model {model_id}: {str(e)}')
-            return None
+    def get_model_stats(self, model_name: str) -> Dict[str, Union[int, float]]:
+        """Get current statistics for a model."""
+        if model_name not in self.models:
+            raise KeyError(f'Model {model_name} not found')
 
-    def free_memory(self, required_memory: float):
-        """Free memory by unloading least recently used models"""
-        models_to_unload = []
-        freed_memory = 0
-
-        for model_id, memory_usage in sorted(
-            self.model_memory_usage.items(),
-            key=lambda x: x[1]  # Sort by memory usage
-        ):
-            models_to_unload.append(model_id)
-            freed_memory += memory_usage
-            if freed_memory >= required_memory:
-                break
-
-        for model_id in models_to_unload:
-            self.unload_model(model_id)
-
-    def unload_model(self, model_id: str):
-        """Unload a model and free its memory"""
-        if model_id in self.loaded_models:
-            model = self.loaded_models[model_id]
-            if torch.cuda.is_available():
-                model.cpu()
-            del self.loaded_models[model_id]
-            del self.model_memory_usage[model_id]
-            del model
-            torch.cuda.empty_cache()
-            gc.collect()
-            self.logger.info(f'Unloaded model {model_id}')
-
-    def get_model(self, model_id: str) -> Optional[torch.nn.Module]:
-        """Get a loaded model by ID"""
-        return self.loaded_models.get(model_id)
-
-    def get_loaded_models(self) -> Dict[str, float]:
-        """Get dictionary of loaded model IDs and their memory usage"""
-        return self.model_memory_usage.copy()
+        config = self.configs[model_name]
+        return {
+            'current_batch_size': config.max_batch_size,
+            'scaling_factor': config.scaling_factor,
+            'memory_allocated_mb': torch.cuda.memory_allocated() / (1024 * 1024) if torch.cuda.is_available() else 0,
+            'memory_reserved_mb': torch.cuda.memory_reserved() / (1024 * 1024) if torch.cuda.is_available() else 0
+        }
