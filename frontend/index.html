@@ -3,221 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ModelMesh Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #6366f1;
-            --secondary: #818cf8;
-            --bg: #f8fafc;
-            --text: #1e293b;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logo svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            transition: transform 0.2s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-        }
-
-        .stat-title {
-            font-size: 0.875rem;
-            color: #64748b;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .model-list {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            overflow: hidden;
-        }
-
-        .model-item {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .model-item:hover {
-            background-color: #f1f5f9;
-        }
-
-        .model-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        .status-active {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-inactive {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-    </style>
+    <title>ModelMesh - Your AI Model Community</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 </head>
-<body>
-    <div class="container">
-        <header class="header">
-            <div class="logo">
-                <svg fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-                ModelMesh Dashboard
-            </div>
-            <div id="connection-status" class="model-status status-active">Connected</div>
-        </header>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-title">Active Models</div>
-                <div class="stat-value" id="active-models">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">Total Requests</div>
-                <div class="stat-value" id="total-requests">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">Average Latency</div>
-                <div class="stat-value" id="avg-latency">0ms</div>
+<body class="bg-gradient-to-br from-indigo-900 to-purple-800 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Viral Social Proof Header -->
+        <div class="animate__animated animate__fadeIn bg-white/10 backdrop-blur-lg rounded-xl p-4 mb-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="animate-pulse bg-green-500 h-3 w-3 rounded-full"></div>
+                    <span class="text-white text-sm"><span class="font-bold text-green-400" id="active-users">2,547</span> AI enthusiasts online now</span>
+                </div>
+                <div class="flex space-x-4">
+                    <div class="flex -space-x-2">
+                        <img src="https://i.pravatar.cc/32?u=1" class="h-8 w-8 rounded-full border-2 border-white">
+                        <img src="https://i.pravatar.cc/32?u=2" class="h-8 w-8 rounded-full border-2 border-white">
+                        <img src="https://i.pravatar.cc/32?u=3" class="h-8 w-8 rounded-full border-2 border-white">
+                        <div class="h-8 w-8 rounded-full border-2 border-white bg-purple-500 flex items-center justify-center text-white text-xs">+99</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="model-list" id="model-list">
-            <!-- Models will be inserted here dynamically -->
+        <!-- Gamification Status Bar -->
+        <div class="bg-white/5 backdrop-blur-lg rounded-xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="text-white text-xl font-bold">Your ModelMesh Level: <span class="text-yellow-400">17</span></h3>
+                    <p class="text-purple-300">Master Model Curator</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-yellow-400">⭐</span>
+                    <span class="text-white">1,234 points</span>
+                </div>
+            </div>
+            <div class="w-full bg-white/10 rounded-full h-4">
+                <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-4 rounded-full animate__animated animate__slideInLeft" style="width: 75%"></div>
+            </div>
+            <p class="text-purple-200 text-sm mt-2">Share 3 more models to reach level 18!</p>
+        </div>
+
+        <!-- Achievement Showcase -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white/5 backdrop-blur-lg rounded-xl p-4 text-center hover:bg-white/10 transition-all cursor-pointer">
+                <div class="text-4xl mb-2">🏆</div>
+                <h4 class="text-white font-bold">Top Contributor</h4>
+                <p class="text-purple-300 text-sm">This Week</p>
+            </div>
+            <div class="bg-white/5 backdrop-blur-lg rounded-xl p-4 text-center hover:bg-white/10 transition-all cursor-pointer">
+                <div class="text-4xl mb-2">🔥</div>
+                <h4 class="text-white font-bold">7 Day Streak</h4>
+                <p class="text-purple-300 text-sm">Keep it up!</p>
+            </div>
+            <div class="bg-white/5 backdrop-blur-lg rounded-xl p-4 text-center hover:bg-white/10 transition-all cursor-pointer">
+                <div class="text-4xl mb-2">⚡</div>
+                <h4 class="text-white font-bold">Fast Responder</h4>
+                <p class="text-purple-300 text-sm">< 5min average</p>
+            </div>
+            <div class="bg-white/5 backdrop-blur-lg rounded-xl p-4 text-center hover:bg-white/10 transition-all cursor-pointer">
+                <div class="text-4xl mb-2">💎</div>
+                <h4 class="text-white font-bold">Premium Member</h4>
+                <p class="text-purple-300 text-sm">Since 2023</p>
+            </div>
+        </div>
+
+        <!-- Daily Challenge -->
+        <div class="bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl p-6 mb-8 animate__animated animate__pulse animate__infinite">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-white text-xl font-bold mb-2">🎯 Daily Challenge</h3>
+                    <p class="text-white/90">Share a Stable Diffusion model and earn 2X points!</p>
+                </div>
+                <div class="text-white text-xl font-bold">4h 32m left</div>
+            </div>
+            <button class="mt-4 bg-white text-purple-600 px-6 py-2 rounded-lg font-bold hover:bg-purple-100 transition-all">Accept Challenge</button>
+        </div>
+
+        <!-- Main Content Area -->
+        <div id="app" class="bg-white/5 backdrop-blur-lg rounded-xl p-6">
+            <!-- Original app content goes here -->
         </div>
     </div>
 
     <script>
-        // Simulated data for demonstration
-        let stats = {
-            activeModels: 0,
-            totalRequests: 0,
-            avgLatency: 0
-        };
-
-        const models = [
-            { name: 'bert-base', status: 'active', requests: 1250 },
-            { name: 'gpt2-medium', status: 'active', requests: 890 },
-            { name: 'resnet50', status: 'inactive', requests: 456 }
-        ];
-
-        function updateStats() {
-            stats.activeModels = models.filter(m => m.status === 'active').length;
-            stats.totalRequests = models.reduce((acc, m) => acc + m.requests, 0);
-            stats.avgLatency = Math.round(Math.random() * 100);
-
-            document.getElementById('active-models').textContent = stats.activeModels;
-            document.getElementById('total-requests').textContent = stats.totalRequests.toLocaleString();
-            document.getElementById('avg-latency').textContent = `${stats.avgLatency}ms`;
-        }
-
-        function renderModels() {
-            const modelList = document.getElementById('model-list');
-            modelList.innerHTML = models.map(model => `
-                <div class="model-item">
-                    <div>
-                        <strong>${model.name}</strong>
-                        <div style="color: #64748b; font-size: 0.875rem;">${model.requests.toLocaleString()} requests</div>
-                    </div>
-                    <div class="model-status status-${model.status}">${model.status}</div>
-                </div>
-            `).join('');
-        }
-
-        // Simulate real-time updates
+        // Simulate active users count
         setInterval(() => {
-            models.forEach(model => {
-                if (Math.random() > 0.7) {
-                    model.requests += Math.floor(Math.random() * 10);
-                }
-            });
-            updateStats();
-            renderModels();
-        }, 2000);
-
-        // Initial render
-        updateStats();
-        renderModels();
-
-        // Add some interactivity
-        document.querySelectorAll('.stat-card').forEach(card => {
-            card.addEventListener('click', () => {
-                card.style.animation = 'pulse 0.5s';
-                setTimeout(() => card.style.animation = '', 500);
-            });
-        });
+            const currentUsers = parseInt(document.getElementById('active-users').textContent);
+            const change = Math.floor(Math.random() * 11) - 5; // Random change between -5 and +5
+            document.getElementById('active-users').textContent = currentUsers + change;
+        }, 5000);
     </script>
 </body>
 </html>
