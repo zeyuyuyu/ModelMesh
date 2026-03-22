@@ -3,97 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ModelMesh - Your AI Model Community</title>
+    <title>ModelMesh - AI Model Playground</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 </head>
-<body class="bg-gradient-to-br from-indigo-900 to-purple-800 min-h-screen">
+<body class="bg-gradient-to-br from-purple-900 to-indigo-900 min-h-screen text-white">
     <div class="container mx-auto px-4 py-8">
-        <!-- Viral Social Proof Header -->
-        <div class="animate__animated animate__fadeIn bg-white/10 backdrop-blur-lg rounded-xl p-4 mb-8">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                    <div class="animate-pulse bg-green-500 h-3 w-3 rounded-full"></div>
-                    <span class="text-white text-sm"><span class="font-bold text-green-400" id="active-users">2,547</span> AI enthusiasts online now</span>
+        <!-- Daily Challenge Banner -->
+        <div class="animate__animated animate__pulse animate__infinite bg-gradient-to-r from-pink-500 to-yellow-500 p-4 rounded-lg mb-8 shadow-lg">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold">🏆 Daily Challenge</h2>
+                    <p class="text-white/90">Train 3 models today and earn 500 MeshCoins!</p>
                 </div>
-                <div class="flex space-x-4">
-                    <div class="flex -space-x-2">
-                        <img src="https://i.pravatar.cc/32?u=1" class="h-8 w-8 rounded-full border-2 border-white">
-                        <img src="https://i.pravatar.cc/32?u=2" class="h-8 w-8 rounded-full border-2 border-white">
-                        <img src="https://i.pravatar.cc/32?u=3" class="h-8 w-8 rounded-full border-2 border-white">
-                        <div class="h-8 w-8 rounded-full border-2 border-white bg-purple-500 flex items-center justify-center text-white text-xs">+99</div>
+                <div class="text-right">
+                    <p class="text-3xl font-bold">2/3</p>
+                    <p class="text-sm">Progress</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievement Showcase -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white/10 p-6 rounded-lg backdrop-blur-sm hover:transform hover:scale-105 transition-all cursor-pointer">
+                <div class="flex items-center mb-4">
+                    <span class="text-4xl mr-4">🎯</span>
+                    <div>
+                        <h3 class="font-bold">Model Master</h3>
+                        <p class="text-sm text-white/70">Trained 50 models</p>
+                    </div>
+                </div>
+                <div class="w-full bg-white/20 rounded-full h-2">
+                    <div class="bg-green-500 h-2 rounded-full" style="width: 75%"></div>
+                </div>
+            </div>
+            <div class="bg-white/10 p-6 rounded-lg backdrop-blur-sm hover:transform hover:scale-105 transition-all cursor-pointer">
+                <div class="flex items-center mb-4">
+                    <span class="text-4xl mr-4">⚡</span>
+                    <div>
+                        <h3 class="font-bold">Speed Demon</h3>
+                        <p class="text-sm text-white/70">Train 5 models in 1 hour</p>
+                    </div>
+                </div>
+                <div class="w-full bg-white/20 rounded-full h-2">
+                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 40%"></div>
+                </div>
+            </div>
+            <div class="bg-white/10 p-6 rounded-lg backdrop-blur-sm hover:transform hover:scale-105 transition-all cursor-pointer">
+                <div class="flex items-center mb-4">
+                    <span class="text-4xl mr-4">🌟</span>
+                    <div>
+                        <h3 class="font-bold">Influencer</h3>
+                        <p class="text-sm text-white/70">100 model shares</p>
+                    </div>
+                </div>
+                <div class="w-full bg-white/20 rounded-full h-2">
+                    <div class="bg-blue-500 h-2 rounded-full" style="width: 90%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Feed -->
+        <div class="bg-white/5 rounded-xl p-6 backdrop-blur-lg">
+            <h2 class="text-2xl font-bold mb-6">🔥 Trending Models</h2>
+            <div class="space-y-4">
+                <!-- Trending Model Card -->
+                <div class="bg-white/10 p-4 rounded-lg hover:bg-white/20 transition-all cursor-pointer">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center">
+                            <img src="https://api.dicebear.com/6.x/avataaars/svg?seed=Felix" class="w-10 h-10 rounded-full mr-4">
+                            <div>
+                                <h3 class="font-bold">Image Generator v2</h3>
+                                <p class="text-sm text-white/70">by @aimaster</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <button class="flex items-center space-x-2 bg-white/20 px-4 py-2 rounded-full hover:bg-white/30 transition-all">
+                                <span>🔥</span>
+                                <span>2.4k</span>
+                            </button>
+                            <button class="flex items-center space-x-2 bg-white/20 px-4 py-2 rounded-full hover:bg-white/30 transition-all">
+                                <span>🔄</span>
+                                <span>Share</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Gamification Status Bar -->
-        <div class="bg-white/5 backdrop-blur-lg rounded-xl p-6 mb-8">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h3 class="text-white text-xl font-bold">Your ModelMesh Level: <span class="text-yellow-400">17</span></h3>
-                    <p class="text-purple-300">Master Model Curator</p>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span class="text-yellow-400">⭐</span>
-                    <span class="text-white">1,234 points</span>
-                </div>
-            </div>
-            <div class="w-full bg-white/10 rounded-full h-4">
-                <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-4 rounded-full animate__animated animate__slideInLeft" style="width: 75%"></div>
-            </div>
-            <p class="text-purple-200 text-sm mt-2">Share 3 more models to reach level 18!</p>
-        </div>
+        <!-- Floating Action Button -->
+        <button class="fixed bottom-8 right-8 bg-gradient-to-r from-pink-500 to-purple-500 p-4 rounded-full shadow-lg hover:transform hover:scale-110 transition-all animate__animated animate__pulse animate__infinite">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+        </button>
+    </div>
 
-        <!-- Achievement Showcase -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white/5 backdrop-blur-lg rounded-xl p-4 text-center hover:bg-white/10 transition-all cursor-pointer">
-                <div class="text-4xl mb-2">🏆</div>
-                <h4 class="text-white font-bold">Top Contributor</h4>
-                <p class="text-purple-300 text-sm">This Week</p>
+    <!-- Reward Popup -->
+    <div class="fixed top-4 right-4 bg-gradient-to-r from-yellow-400 to-yellow-600 p-4 rounded-lg shadow-lg animate__animated animate__fadeInRight">
+        <div class="flex items-center space-x-4">
+            <span class="text-4xl">🎉</span>
+            <div>
+                <h3 class="font-bold">Achievement Unlocked!</h3>
+                <p>You earned 100 MeshCoins</p>
             </div>
-            <div class="bg-white/5 backdrop-blur-lg rounded-xl p-4 text-center hover:bg-white/10 transition-all cursor-pointer">
-                <div class="text-4xl mb-2">🔥</div>
-                <h4 class="text-white font-bold">7 Day Streak</h4>
-                <p class="text-purple-300 text-sm">Keep it up!</p>
-            </div>
-            <div class="bg-white/5 backdrop-blur-lg rounded-xl p-4 text-center hover:bg-white/10 transition-all cursor-pointer">
-                <div class="text-4xl mb-2">⚡</div>
-                <h4 class="text-white font-bold">Fast Responder</h4>
-                <p class="text-purple-300 text-sm">< 5min average</p>
-            </div>
-            <div class="bg-white/5 backdrop-blur-lg rounded-xl p-4 text-center hover:bg-white/10 transition-all cursor-pointer">
-                <div class="text-4xl mb-2">💎</div>
-                <h4 class="text-white font-bold">Premium Member</h4>
-                <p class="text-purple-300 text-sm">Since 2023</p>
-            </div>
-        </div>
-
-        <!-- Daily Challenge -->
-        <div class="bg-gradient-to-r from-pink-500 to-purple-500 rounded-xl p-6 mb-8 animate__animated animate__pulse animate__infinite">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h3 class="text-white text-xl font-bold mb-2">🎯 Daily Challenge</h3>
-                    <p class="text-white/90">Share a Stable Diffusion model and earn 2X points!</p>
-                </div>
-                <div class="text-white text-xl font-bold">4h 32m left</div>
-            </div>
-            <button class="mt-4 bg-white text-purple-600 px-6 py-2 rounded-lg font-bold hover:bg-purple-100 transition-all">Accept Challenge</button>
-        </div>
-
-        <!-- Main Content Area -->
-        <div id="app" class="bg-white/5 backdrop-blur-lg rounded-xl p-6">
-            <!-- Original app content goes here -->
         </div>
     </div>
 
     <script>
-        // Simulate active users count
-        setInterval(() => {
-            const currentUsers = parseInt(document.getElementById('active-users').textContent);
-            const change = Math.floor(Math.random() * 11) - 5; // Random change between -5 and +5
-            document.getElementById('active-users').textContent = currentUsers + change;
-        }, 5000);
+        // Add gamification logic here
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate achievement notifications
+            setInterval(() => {
+                const rewards = ['🎉 +50 MeshCoins', '🏆 New Badge Unlocked!', '⭐ Level Up!'];
+                const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
+                showNotification(randomReward);
+            }, 45000);
+        });
+
+        function showNotification(message) {
+            // Add notification logic
+        }
     </script>
 </body>
 </html>
