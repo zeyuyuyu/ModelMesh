@@ -7,124 +7,122 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 </head>
-<body class="bg-gradient-to-br from-purple-900 to-indigo-900 min-h-screen text-white">
-    <div class="container mx-auto px-4 py-8">
-        <!-- Daily Challenge Banner -->
-        <div class="animate__animated animate__pulse animate__infinite bg-gradient-to-r from-pink-500 to-yellow-500 p-4 rounded-lg mb-8 shadow-lg">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-bold">🏆 Daily Challenge</h2>
-                    <p class="text-white/90">Train 3 models today and earn 500 MeshCoins!</p>
+<body class="bg-gray-100">
+    <div id="confetti-canvas" class="fixed inset-0 pointer-events-none"></div>
+    
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-blue-600">ModelMesh</h1>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <span class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-2 py-1 text-xs animate-pulse" id="streak-counter">🔥 3</span>
+                    <img src="https://api.dicebear.com/6.x/avataaars/svg?seed=Felix" class="w-10 h-10 rounded-full border-2 border-blue-500">
                 </div>
-                <div class="text-right">
-                    <p class="text-3xl font-bold">2/3</p>
-                    <p class="text-sm">Progress</p>
+                <div class="text-sm">
+                    <div class="font-semibold">Level <span id="user-level">5</span></div>
+                    <div class="text-gray-500"><span id="xp-counter">2400</span> XP</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-xl p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Daily Challenge</h2>
+                <div class="text-sm text-gray-500">Resets in <span id="challenge-timer">23:45:12</span></div>
+            </div>
+            <div class="bg-blue-50 rounded-lg p-4 mb-4">
+                <div class="font-medium">🎯 Today's Goal: Train 3 models with 90%+ accuracy</div>
+                <div class="mt-2 bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 rounded-full h-2 w-2/3 transition-all duration-500"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Achievement Showcase -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white/10 p-6 rounded-lg backdrop-blur-sm hover:transform hover:scale-105 transition-all cursor-pointer">
-                <div class="flex items-center mb-4">
-                    <span class="text-4xl mr-4">🎯</span>
-                    <div>
-                        <h3 class="font-bold">Model Master</h3>
-                        <p class="text-sm text-white/70">Trained 50 models</p>
-                    </div>
-                </div>
-                <div class="w-full bg-white/20 rounded-full h-2">
-                    <div class="bg-green-500 h-2 rounded-full" style="width: 75%"></div>
-                </div>
-            </div>
-            <div class="bg-white/10 p-6 rounded-lg backdrop-blur-sm hover:transform hover:scale-105 transition-all cursor-pointer">
-                <div class="flex items-center mb-4">
-                    <span class="text-4xl mr-4">⚡</span>
-                    <div>
-                        <h3 class="font-bold">Speed Demon</h3>
-                        <p class="text-sm text-white/70">Train 5 models in 1 hour</p>
-                    </div>
-                </div>
-                <div class="w-full bg-white/20 rounded-full h-2">
-                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 40%"></div>
-                </div>
-            </div>
-            <div class="bg-white/10 p-6 rounded-lg backdrop-blur-sm hover:transform hover:scale-105 transition-all cursor-pointer">
-                <div class="flex items-center mb-4">
-                    <span class="text-4xl mr-4">🌟</span>
-                    <div>
-                        <h3 class="font-bold">Influencer</h3>
-                        <p class="text-sm text-white/70">100 model shares</p>
-                    </div>
-                </div>
-                <div class="w-full bg-white/20 rounded-full h-2">
-                    <div class="bg-blue-500 h-2 rounded-full" style="width: 90%"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Social Feed -->
-        <div class="bg-white/5 rounded-xl p-6 backdrop-blur-lg">
-            <h2 class="text-2xl font-bold mb-6">🔥 Trending Models</h2>
-            <div class="space-y-4">
-                <!-- Trending Model Card -->
-                <div class="bg-white/10 p-4 rounded-lg hover:bg-white/20 transition-all cursor-pointer">
-                    <div class="flex justify-between items-start">
-                        <div class="flex items-center">
-                            <img src="https://api.dicebear.com/6.x/avataaars/svg?seed=Felix" class="w-10 h-10 rounded-full mr-4">
-                            <div>
-                                <h3 class="font-bold">Image Generator v2</h3>
-                                <p class="text-sm text-white/70">by @aimaster</p>
-                            </div>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white rounded-lg shadow-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Leaderboard</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-2 bg-yellow-50 rounded">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xl">👑</span>
+                            <img src="https://api.dicebear.com/6.x/avataaars/svg?seed=John" class="w-8 h-8 rounded-full">
+                            <span class="font-medium">John D.</span>
                         </div>
-                        <div class="flex items-center space-x-4">
-                            <button class="flex items-center space-x-2 bg-white/20 px-4 py-2 rounded-full hover:bg-white/30 transition-all">
-                                <span>🔥</span>
-                                <span>2.4k</span>
-                            </button>
-                            <button class="flex items-center space-x-2 bg-white/20 px-4 py-2 rounded-full hover:bg-white/30 transition-all">
-                                <span>🔄</span>
-                                <span>Share</span>
-                            </button>
-                        </div>
+                        <span class="font-bold">12,450 XP</span>
                     </div>
+                    <!-- More leaderboard entries -->
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Your Achievements</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="text-center">
+                        <div class="w-16 h-16 mx-auto mb-2 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span class="text-2xl">🚀</span>
+                        </div>
+                        <div class="text-sm">First Deploy</div>
+                    </div>
+                    <div class="text-center opacity-50">
+                        <div class="w-16 h-16 mx-auto mb-2 bg-gray-100 rounded-full flex items-center justify-center">
+                            <span class="text-2xl">🎯</span>
+                        </div>
+                        <div class="text-sm">Accuracy Master</div>
+                    </div>
+                    <!-- More achievements -->
                 </div>
             </div>
         </div>
+    </main>
 
-        <!-- Floating Action Button -->
-        <button class="fixed bottom-8 right-8 bg-gradient-to-r from-pink-500 to-purple-500 p-4 rounded-full shadow-lg hover:transform hover:scale-110 transition-all animate__animated animate__pulse animate__infinite">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-        </button>
-    </div>
-
-    <!-- Reward Popup -->
-    <div class="fixed top-4 right-4 bg-gradient-to-r from-yellow-400 to-yellow-600 p-4 rounded-lg shadow-lg animate__animated animate__fadeInRight">
-        <div class="flex items-center space-x-4">
-            <span class="text-4xl">🎉</span>
+    <div id="reward-popup" class="fixed bottom-4 right-4 bg-white rounded-lg shadow-xl p-4 hidden animate__animated animate__bounceIn">
+        <div class="flex items-center space-x-3">
+            <div class="text-2xl">🎉</div>
             <div>
-                <h3 class="font-bold">Achievement Unlocked!</h3>
-                <p>You earned 100 MeshCoins</p>
+                <div class="font-bold">Achievement Unlocked!</div>
+                <div class="text-sm text-gray-500">First Successful Model Deploy</div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
     <script>
-        // Add gamification logic here
-        document.addEventListener('DOMContentLoaded', function() {
-            // Simulate achievement notifications
-            setInterval(() => {
-                const rewards = ['🎉 +50 MeshCoins', '🏆 New Badge Unlocked!', '⭐ Level Up!'];
-                const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
-                showNotification(randomReward);
-            }, 45000);
-        });
-
-        function showNotification(message) {
-            // Add notification logic
+        // Gamification logic
+        function showReward() {
+            const popup = document.getElementById('reward-popup');
+            popup.classList.remove('hidden');
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            setTimeout(() => popup.classList.add('hidden'), 3000);
         }
+
+        // Update streak counter every day
+        function updateStreak() {
+            const streak = parseInt(localStorage.getItem('streak') || 0);
+            document.getElementById('streak-counter').textContent = `🔥 ${streak}`;
+        }
+
+        // Share achievements
+        function shareAchievement(achievement) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'ModelMesh Achievement Unlocked!',
+                    text: `I just unlocked the ${achievement} achievement on ModelMesh! Join me in training AI models!`,
+                    url: window.location.href
+                });
+            }
+        }
+
+        // Initialize
+        updateStreak();
+        
+        // Demo: Show reward after 5 seconds
+        setTimeout(showReward, 5000);
     </script>
 </body>
 </html>
