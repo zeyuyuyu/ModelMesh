@@ -3,126 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ModelMesh - AI Model Playground</title>
+    <title>ModelMesh - Create Your AI Avatar</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        .avatar-card {
+            transition: all 0.3s ease;
+        }
+        .avatar-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .confetti {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            pointer-events: none;
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
-    <div id="confetti-canvas" class="fixed inset-0 pointer-events-none"></div>
-    
-    <nav class="bg-white shadow-lg">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-blue-600">ModelMesh</h1>
-            <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <span class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-2 py-1 text-xs animate-pulse" id="streak-counter">🔥 3</span>
-                    <img src="https://api.dicebear.com/6.x/avataaars/svg?seed=Felix" class="w-10 h-10 rounded-full border-2 border-blue-500">
-                </div>
-                <div class="text-sm">
-                    <div class="font-semibold">Level <span id="user-level">5</span></div>
-                    <div class="text-gray-500"><span id="xp-counter">2400</span> XP</div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="container mx-auto px-4 py-8">
-        <div class="bg-white rounded-lg shadow-xl p-6 mb-8">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold">Daily Challenge</h2>
-                <div class="text-sm text-gray-500">Resets in <span id="challenge-timer">23:45:12</span></div>
-            </div>
-            <div class="bg-blue-50 rounded-lg p-4 mb-4">
-                <div class="font-medium">🎯 Today's Goal: Train 3 models with 90%+ accuracy</div>
-                <div class="mt-2 bg-gray-200 rounded-full h-2">
-                    <div class="bg-blue-600 rounded-full h-2 w-2/3 transition-all duration-500"></div>
-                </div>
-            </div>
+<body class="bg-gradient-to-br from-purple-500 to-indigo-600 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-white mb-4">Create Your AI Avatar</h1>
+            <p class="text-xl text-white opacity-90">Join millions creating and sharing their digital twins!</p>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-8">
-            <div class="bg-white rounded-lg shadow-xl p-6">
-                <h3 class="text-lg font-semibold mb-4">Leaderboard</h3>
+        <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div id="avatar-preview" class="h-64 bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
+                    <img id="current-avatar" src="#" class="hidden max-h-full rounded-lg">
+                    <p class="text-gray-400">Your avatar will appear here</p>
+                </div>
+
                 <div class="space-y-4">
-                    <div class="flex items-center justify-between p-2 bg-yellow-50 rounded">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-xl">👑</span>
-                            <img src="https://api.dicebear.com/6.x/avataaars/svg?seed=John" class="w-8 h-8 rounded-full">
-                            <span class="font-medium">John D.</span>
-                        </div>
-                        <span class="font-bold">12,450 XP</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="randomizeAvatar()" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition">Randomize</button>
+                        <button onclick="generateAvatar()" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">Generate</button>
                     </div>
-                    <!-- More leaderboard entries -->
+
+                    <div class="flex flex-wrap gap-4">
+                        <div class="w-full">
+                            <label class="block text-sm font-medium text-gray-700">Style</label>
+                            <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                                <option>Anime</option>
+                                <option>Realistic</option>
+                                <option>Cartoon</option>
+                                <option>Pixel Art</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow-xl p-6">
-                <h3 class="text-lg font-semibold mb-4">Your Achievements</h3>
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="text-center">
-                        <div class="w-16 h-16 mx-auto mb-2 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span class="text-2xl">🚀</span>
-                        </div>
-                        <div class="text-sm">First Deploy</div>
+            <div class="space-y-6">
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4">🏆 Today's Top Avatars</h3>
+                    <div class="grid grid-cols-2 gap-4" id="trending-avatars">
+                        <!-- Trending avatars populated dynamically -->
                     </div>
-                    <div class="text-center opacity-50">
-                        <div class="w-16 h-16 mx-auto mb-2 bg-gray-100 rounded-full flex items-center justify-center">
-                            <span class="text-2xl">🎯</span>
-                        </div>
-                        <div class="text-sm">Accuracy Master</div>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4">🌟 Share Your Avatar</h3>
+                    <div class="flex gap-2">
+                        <button onclick="shareToTwitter()" class="flex-1 bg-blue-400 text-white px-4 py-2 rounded-lg hover:bg-blue-500 transition">Twitter</button>
+                        <button onclick="shareToInstagram()" class="flex-1 bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition">Instagram</button>
+                        <button onclick="shareTikTok()" class="flex-1 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition">TikTok</button>
                     </div>
-                    <!-- More achievements -->
                 </div>
             </div>
         </div>
-    </main>
 
-    <div id="reward-popup" class="fixed bottom-4 right-4 bg-white rounded-lg shadow-xl p-4 hidden animate__animated animate__bounceIn">
-        <div class="flex items-center space-x-3">
-            <div class="text-2xl">🎉</div>
-            <div>
-                <div class="font-bold">Achievement Unlocked!</div>
-                <div class="text-sm text-gray-500">First Successful Model Deploy</div>
-            </div>
+        <div class="mt-12 text-center">
+            <p class="text-white text-xl font-bold">👥 <span id="online-users">2,547</span> people creating avatars right now</p>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
     <script>
-        // Gamification logic
-        function showReward() {
-            const popup = document.getElementById('reward-popup');
-            popup.classList.remove('hidden');
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
-            setTimeout(() => popup.classList.add('hidden'), 3000);
-        }
-
-        // Update streak counter every day
-        function updateStreak() {
-            const streak = parseInt(localStorage.getItem('streak') || 0);
-            document.getElementById('streak-counter').textContent = `🔥 ${streak}`;
-        }
-
-        // Share achievements
-        function shareAchievement(achievement) {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'ModelMesh Achievement Unlocked!',
-                    text: `I just unlocked the ${achievement} achievement on ModelMesh! Join me in training AI models!`,
-                    url: window.location.href
+        function randomizeAvatar() {
+            // Simulate avatar generation
+            setTimeout(() => {
+                document.getElementById('current-avatar').src = 'https://picsum.photos/400';
+                document.getElementById('current-avatar').classList.remove('hidden');
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
                 });
-            }
+            }, 500);
         }
 
-        // Initialize
-        updateStreak();
-        
-        // Demo: Show reward after 5 seconds
-        setTimeout(showReward, 5000);
+        function updateOnlineUsers() {
+            const base = 2547;
+            const random = Math.floor(Math.random() * 200) - 100;
+            document.getElementById('online-users').textContent = base + random;
+        }
+
+        setInterval(updateOnlineUsers, 5000);
+
+        // Social sharing functions
+        function shareToTwitter() {
+            // Implement Twitter sharing
+            alert('Sharing to Twitter...');
+        }
+
+        function shareToInstagram() {
+            // Implement Instagram sharing
+            alert('Sharing to Instagram...');
+        }
+
+        function shareTikTok() {
+            // Implement TikTok sharing
+            alert('Sharing to TikTok...');
+        }
     </script>
 </body>
 </html>
